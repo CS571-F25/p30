@@ -4,178 +4,151 @@ import React, { useState } from 'react';
 export default function StockPage() {
   const [selectedFilter, setSelectedFilter] = useState('all');
 
-  // 주식 데이터
+  // Stock Data
   const stockData = [
     {
       id: 1,
-      name: '삼성전자',
-      code: '005930',
-      price: '₩71,200',
-      change: '+₩1,200',
+      name: 'Apple Inc.',
+      code: 'AAPL',
+      price: '$187.50',
+      change: '+$3.20',
       changePercent: '+1.71%',
       isPositive: true
     },
     {
       id: 2,
-      name: 'SK하이닉스',
-      code: '000660',
-      price: '₩128,500',
-      change: '+₩3,500',
+      name: 'Microsoft Corp.',
+      code: 'MSFT',
+      price: '$395.00',
+      change: '+$10.75',
       changePercent: '+2.80%',
       isPositive: true
     },
     {
       id: 3,
-      name: 'NAVER',
-      code: '035420',
-      price: '₩208,000',
-      change: '-₩7,000',
+      name: 'Google',
+      code: 'GOOGL',
+      price: '$142.00',
+      change: '-$4.75',
       changePercent: '-3.26%',
       isPositive: false
-    },
-    {
-      id: 4,
-      name: 'LG에너지솔루션',
-      code: '373220',
-      price: '₩450,000',
-      change: '+₩5,000',
-      changePercent: '+1.12%',
-      isPositive: true
-    },
-    {
-      id: 5,
-      name: '현대차',
-      code: '005380',
-      price: '₩180,000',
-      change: '-₩2,000',
-      changePercent: '-1.10%',
-      isPositive: false
-    },
-    {
-      id: 6,
-      name: '카카오',
-      code: '035720',
-      price: '₩52,300',
-      change: '+₩800',
-      changePercent: '+1.55%',
-      isPositive: true
     }
   ];
 
   return (
     <main className="main-content">
-      {/* 1. 검색 및 필터 섹션 */}
+      {/* 1. Search and Filter Section */}
       <section className="stock-search">
         <div className="search-container">
           <input
             type="text"
-            placeholder="종목명 또는 종목코드로 검색하세요"
+            placeholder="Search by stock name or ticker symbol"
             className="stock-search-input"
           />
-          <button>검색</button>
+          <button>Search</button>
         </div>
         <div className="filter-tabs">
           <button 
             className={`filter-tab ${selectedFilter === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedFilter('all')}
           >
-            전체
+            All
           </button>
           <button 
-            className={`filter-tab ${selectedFilter === 'kospi' ? 'active' : ''}`}
-            onClick={() => setSelectedFilter('kospi')}
+            className={`filter-tab ${selectedFilter === 'nyse' ? 'active' : ''}`}
+            onClick={() => setSelectedFilter('nyse')}
           >
-            코스피
+            NYSE
           </button>
           <button 
-            className={`filter-tab ${selectedFilter === 'kosdaq' ? 'active' : ''}`}
-            onClick={() => setSelectedFilter('kosdaq')}
+            className={`filter-tab ${selectedFilter === 'nasdaq' ? 'active' : ''}`}
+            onClick={() => setSelectedFilter('nasdaq')}
           >
-            코스닥
+            NASDAQ
           </button>
           <button 
             className={`filter-tab ${selectedFilter === 'favorite' ? 'active' : ''}`}
             onClick={() => setSelectedFilter('favorite')}
           >
-            관심종목
+            Watchlist
           </button>
         </div>
       </section>
 
-      {/* 2. 주요 지수 */}
+      {/* 2. Major Indices */}
       <section className="market-indices">
-        <h2 className="section-title">주요 지수</h2>
+        <h2 className="section-title">Major Indices</h2>
         <div className="indices-grid">
           <div className="index-card">
             <div className="index-header">
-              <h3>코스피</h3>
-              <span className="index-code">KOSPI</span>
+              <h3>S&P 500</h3>
+              <span className="index-code">SPX</span>
             </div>
             <div className="index-value">
-              <span className="current-value">2,645.50</span>
-              <span className="change positive">+15.30 (+0.58%)</span>
+              <span className="current-value">4,845.50</span>
+              <span className="change positive">+28.30 (+0.58%)</span>
             </div>
             <div className="index-details">
-              <span>고가: 2,658.20</span>
-              <span>저가: 2,631.40</span>
+              <span>High: 4,858.20</span>
+              <span>Low: 4,831.40</span>
             </div>
           </div>
 
           <div className="index-card">
             <div className="index-header">
-              <h3>코스닥</h3>
-              <span className="index-code">KOSDAQ</span>
+              <h3>NASDAQ</h3>
+              <span className="index-code">IXIC</span>
             </div>
             <div className="index-value">
-              <span className="current-value">852.75</span>
-              <span className="change negative">-3.25 (-0.38%)</span>
+              <span className="current-value">15,282.75</span>
+              <span className="change negative">-58.25 (-0.38%)</span>
             </div>
             <div className="index-details">
-              <span>고가: 858.90</span>
-              <span>저가: 850.10</span>
+              <span>High: 15,358.90</span>
+              <span>Low: 15,250.10</span>
             </div>
           </div>
 
           <div className="index-card">
             <div className="index-header">
-              <h3>코스피200</h3>
-              <span className="index-code">KRX200</span>
+              <h3>Dow Jones</h3>
+              <span className="index-code">DJI</span>
             </div>
             <div className="index-value">
-              <span className="current-value">352.45</span>
-              <span className="change positive">+2.15 (+0.61%)</span>
+              <span className="current-value">37,652.45</span>
+              <span className="change positive">+229.15 (+0.61%)</span>
             </div>
             <div className="index-details">
-              <span>고가: 354.20</span>
-              <span>저가: 350.30</span>
+              <span>High: 37,754.20</span>
+              <span>Low: 37,550.30</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. 인기 종목 테이블 */}
+      {/* 3. Popular Stocks Table */}
       <section>
         <div className="table-header">
-          <h2 className="section-title">인기 종목</h2>
+          <h2 className="section-title">Popular Stocks</h2>
           <div className="table-controls">
             <select className="sort-select">
-              <option>거래량순</option>
-              <option>등락률순</option>
-              <option>시가총액순</option>
+              <option>Volume</option>
+              <option>Change %</option>
+              <option>Market Cap</option>
             </select>
-            <button className="refresh-btn">새로고침</button>
+            <button className="refresh-btn">Refresh</button>
           </div>
         </div>
         
         <table>
           <thead>
             <tr>
-              <th>종목명</th>
-              <th>현재가</th>
-              <th>전일대비</th>
-              <th>등락률</th>
-              <th>거래량</th>
-              <th>시가총액</th>
+              <th>Stock</th>
+              <th>Price</th>
+              <th>Change</th>
+              <th>Change %</th>
+              <th>Volume</th>
+              <th>Market Cap</th>
             </tr>
           </thead>
           <tbody>
@@ -194,48 +167,48 @@ export default function StockPage() {
                 <td className={stock.isPositive ? 'positive' : 'negative'}>
                   {stock.changePercent}
                 </td>
-                <td>1,234,567</td>
-                <td>425조원</td>
+                <td>52.3M</td>
+                <td>$2.8T</td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
 
-      {/* 4. 상승/하락 종목 */}
+      {/* 4. Gainers/Losers */}
       <section>
-        <h2 className="section-title">상승/하락 종목</h2>
+        <h2 className="section-title">Top Gainers & Losers</h2>
         <div className="movers-container">
           <div className="gainers">
-            <h3>상승 종목</h3>
+            <h3>Top Gainers</h3>
             <div className="movers-list">
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">SK하이닉스</span>
-                  <span className="stock-code">000660</span>
+                  <span className="stock-name">Microsoft Corp.</span>
+                  <span className="stock-code">MSFT</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩128,500</span>
+                  <span className="current-price">$395.00</span>
                   <span className="price-change positive">+2.80%</span>
                 </div>
               </div>
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">삼성전자</span>
-                  <span className="stock-code">005930</span>
+                  <span className="stock-name">Apple Inc.</span>
+                  <span className="stock-code">AAPL</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩71,200</span>
+                  <span className="current-price">$187.50</span>
                   <span className="price-change positive">+1.71%</span>
                 </div>
               </div>
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">카카오</span>
-                  <span className="stock-code">035720</span>
+                  <span className="stock-name">Meta Platforms</span>
+                  <span className="stock-code">META</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩52,300</span>
+                  <span className="current-price">$385.00</span>
                   <span className="price-change positive">+1.55%</span>
                 </div>
               </div>
@@ -243,35 +216,35 @@ export default function StockPage() {
           </div>
 
           <div className="losers">
-            <h3>하락 종목</h3>
+            <h3>Top Losers</h3>
             <div className="movers-list">
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">NAVER</span>
-                  <span className="stock-code">035420</span>
+                  <span className="stock-name">Google</span>
+                  <span className="stock-code">GOOGL</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩208,000</span>
+                  <span className="current-price">$142.00</span>
                   <span className="price-change negative">-3.26%</span>
                 </div>
               </div>
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">현대차</span>
-                  <span className="stock-code">005380</span>
+                  <span className="stock-name">Amazon.com</span>
+                  <span className="stock-code">AMZN</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩180,000</span>
-                  <span className="price-change negative">-1.10%</span>
+                  <span className="current-price">$178.50</span>
+                  <span className="price-change negative">-1.08%</span>
                 </div>
               </div>
               <div className="mover-item">
                 <div className="stock-info">
-                  <span className="stock-name">LG전자</span>
-                  <span className="stock-code">066570</span>
+                  <span className="stock-name">Netflix Inc.</span>
+                  <span className="stock-code">NFLX</span>
                 </div>
                 <div className="stock-price">
-                  <span className="current-price">₩95,000</span>
+                  <span className="current-price">$485.00</span>
                   <span className="price-change negative">-0.52%</span>
                 </div>
               </div>
@@ -280,13 +253,50 @@ export default function StockPage() {
         </div>
       </section>
 
-      {/* 5. 차트 영역 (placeholder) */}
+      {/* 5. Chart Area (placeholder) */}
       <section>
-        <h2 className="section-title">시장 동향 차트</h2>
+        <h2 className="section-title">Market Trends Chart</h2>
         <div className="chart-placeholder">
           <p>📊</p>
-          <p>차트가 여기에 표시됩니다</p>
+          <p>Chart will be displayed here</p>
         </div>
+      </section>
+
+      {/* 6. Watchlist */}
+      <section className="watchlist">
+        <h2 className="section-title">Watchlist</h2>
+        <div className="watchlist-grid">
+          <div className="watchlist-item">
+            <div className="stock-header">
+              <span className="stock-name">NVIDIA Corp.</span>
+              <span className="stock-code">NVDA</span>
+            </div>
+            <div className="stock-price">
+              <span className="current-price">$495.00</span>
+              <span className="price-change positive">+$5.50 (+1.12%)</span>
+            </div>
+          </div>
+          <div className="watchlist-item">
+            <div className="stock-header">
+              <span className="stock-name">Amazon.com Inc.</span>
+              <span className="stock-code">AMZN</span>
+            </div>
+            <div className="stock-price">
+              <span className="current-price">$178.50</span>
+              <span className="price-change negative">-$1.95 (-1.08%)</span>
+            </div>
+          </div>
+          <div className="watchlist-item">
+            <div className="stock-header">
+              <span className="stock-name">Tesla Inc.</span>
+              <span className="stock-code">TSLA</span>
+            </div>
+            <div className="stock-price">
+              <span className="current-price">$237.50</span>
+              <span className="price-change positive">+$2.65 (+1.12%)</span>
+            </div>
+          </div>
+    </div>
       </section>
     </main>
   );

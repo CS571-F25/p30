@@ -9,29 +9,110 @@
 
 .user-profile {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.profile-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
-.user-details h2 {
-  font-size: 28px;
-  margin-bottom: 8px;
+.profile-top-row {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.profile-image-container {
+  flex-shrink: 0;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.profile-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.profile-icon-navbar {
+  font-size: 20px;
+  user-select: none;
+}
+
+.profile-icon {
+  font-size: 50px;
+  user-select: none;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.user-name {
+  font-size: 32px;
+  margin: 0;
+  font-weight: 600;
 }
 
 .user-email {
   opacity: 0.9;
-  margin-bottom: 15px;
+  margin: 0;
+  font-size: 16px;
+}
+
+.profile-bottom-row {
+  display: flex;
 }
 
 .user-stats {
   display: flex;
-  gap: 20px;
+  gap: 15px;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  margin-left: auto;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .stat-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 20px;
   border-radius: 8px;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 14px;
 }
 
 .portfolio-summary .portfolio-cards {
@@ -86,7 +167,7 @@
 
 .stock-search-input {
   flex: 1;
-  max-width: 400px;
+  max-width: 100%;
 }
 
 .filter-tabs {
@@ -879,7 +960,7 @@
 
 .stock-search-input {
   flex: 1;
-  max-width: 400px;
+  max-width: 100%;
 }
 
 .selected-stock-info {

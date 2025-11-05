@@ -5,7 +5,14 @@
   box-sizing: border-box;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+}
+
 body {
+  margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -16,28 +23,38 @@ body {
   line-height: 1.6;
 }
 
+#root {
+  margin: 0;
+  padding: 0;
+}
+
 /* Header Navigation Styles */
 .header-nav {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1000;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  height: 90px;
 }
 
 .nav-brand .brand-title {
   color: white;
-  font-size: 24px;
+  font-size: 36px;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -47,12 +64,16 @@ body {
   gap: 10px;
 }
 
+.nav-menu a {
+  color: white !important;
+}
+
 .nav-link {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 16px;
-  color: rgba(255, 255, 255, 0.8);
+  color: white !important;
   text-decoration: none;
   border-radius: 12px;
   transition: all 0.3s ease;
@@ -61,20 +82,24 @@ body {
 
 .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: white !important;
   transform: translateY(-2px);
 }
 
 .nav-link--active {
   background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: white !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.nav-link .nav-label {
+  color: white !important;
+}
 
 .nav-label {
-  font-size: 12px;
+  font-size: 24px;
   font-weight: 500;
+  color: white !important;
 }
 
 .nav-actions {
@@ -84,20 +109,26 @@ body {
 
 .search-btn, .profile-btn {
   background: rgba(255, 255, 255, 0.1);
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  min-height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
   color: white;
+  font-size: 20px;
+  padding: 0;
+  aspect-ratio: 1 / 1;
 }
 
 .search-btn:hover, .profile-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+  border-color: white;
   transform: scale(1.1);
 }
 
@@ -106,6 +137,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px 20px;
+  padding-top: 120px;
 }
 
 /* Section Styles */

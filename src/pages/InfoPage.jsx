@@ -4,167 +4,167 @@ import React, { useState } from 'react';
 export default function InfoPage() {
   const [activeTab, setActiveTab] = useState('news');
 
-  // 투자뉴스 데이터
+  // News Data
   const newsData = [
     {
       id: 1,
-      category: '시장동향',
-      title: '미국 연준, 금리 인하 시점에 대한 신호 발표',
-      excerpt: '미국 연방준비제도(Fed)가 최근 FOMC 회의에서 금리 인하 시점에 대한 구체적인 신호를 발표하여 글로벌 금융시장의 관심이 집중되고 있습니다.',
-      source: '연합뉴스',
-      time: '2시간 전',
+      category: 'Market Trends',
+      title: 'Federal Reserve Signals Potential Rate Cut Timeline',
+      excerpt: 'The Federal Reserve has issued specific signals regarding the timing of interest rate cuts at the recent FOMC meeting, drawing attention from global financial markets.',
+      source: 'Reuters',
+      time: '2 hours ago',
       views: '1,234',
       isFeatured: true
     },
     {
       id: 2,
-      category: '기업뉴스',
-      title: '삼성전자, AI 반도체 시장 진출 확대',
-      excerpt: '삼성전자가 인공지능(AI) 반도체 시장 진출을 확대한다고 발표했습니다.',
-      source: '매일경제',
-      time: '4시간 전',
+      category: 'Corporate News',
+      title: 'Apple Expands AI Chip Market Entry',
+      excerpt: 'Apple announced plans to expand its entry into the artificial intelligence (AI) chip market.',
+      source: 'Bloomberg',
+      time: '4 hours ago',
       views: '856',
       isFeatured: false
     },
     {
       id: 3,
-      category: '시장동향',
-      title: '코스피, 외국인 매수세로 상승 마감',
-      excerpt: '코스피가 외국인 투자자들의 매수세로 전일 대비 상승 마감했습니다.',
-      source: '한국경제',
-      time: '6시간 전',
+      category: 'Market Trends',
+      title: 'S&P 500 Closes Higher on Foreign Buying',
+      excerpt: 'The S&P 500 closed higher compared to the previous day due to foreign investor buying.',
+      source: 'Wall Street Journal',
+      time: '6 hours ago',
       views: '723',
       isFeatured: false
     },
     {
       id: 4,
-      category: '해외시장',
-      title: '나스닥, 기술주 상승으로 신고점 경신',
-      excerpt: '나스닥 지수가 기술주들의 상승으로 신고점을 경신했습니다.',
-      source: '로이터',
-      time: '8시간 전',
+      category: 'International Markets',
+      title: 'Nasdaq Hits New High on Tech Stock Rally',
+      excerpt: 'The Nasdaq index hit a new high as technology stocks rallied.',
+      source: 'Reuters',
+      time: '8 hours ago',
       views: '645',
       isFeatured: false
     },
     {
       id: 5,
-      category: '기업뉴스',
-      title: 'SK하이닉스, 메모리 반도체 가격 상승세 지속',
-      excerpt: 'SK하이닉스가 메모리 반도체 가격 상승세가 지속될 것으로 전망했습니다.',
-      source: '매일경제',
-      time: '10시간 전',
+      category: 'Corporate News',
+      title: 'Intel Expects Continued Memory Chip Price Increases',
+      excerpt: 'Intel forecasts that memory chip price increases will continue.',
+      source: 'Financial Times',
+      time: '10 hours ago',
       views: '567',
       isFeatured: false
     },
     {
       id: 6,
-      category: '해외시장',
-      title: '유럽 중앙은행, 통화정책 방향성 제시',
-      excerpt: '유럽 중앙은행(ECB)이 향후 통화정책 방향성에 대한 구체적인 가이드라인을 제시했습니다.',
-      source: '블룸버그',
-      time: '12시간 전',
+      category: 'International Markets',
+      title: 'European Central Bank Presents Monetary Policy Direction',
+      excerpt: 'The European Central Bank (ECB) has presented specific guidelines for future monetary policy direction.',
+      source: 'Bloomberg',
+      time: '12 hours ago',
       views: '432',
       isFeatured: false
     }
   ];
 
-  // 기업공시 데이터
+  // Disclosure Data
   const disclosureData = [
     {
       id: 1,
-      company: '삼성전자',
-      type: '사업보고서',
-      title: '2023년 사업보고서',
-      description: '2023년도 사업실적 및 재무상태에 관한 사업보고서를 공시합니다.',
-      date: '2024.01.15'
+      company: 'Apple Inc.',
+      type: 'Annual Report',
+      title: '2023 Annual Report',
+      description: 'Disclosure of annual report regarding business performance and financial status for 2023.',
+      date: 'Jan 15, 2024'
     },
     {
       id: 2,
-      company: 'SK하이닉스',
-      type: '주요사항보고서',
-      title: '신규 사업 진출 관련 주요사항',
-      description: 'AI 반도체 신규 사업 진출에 관한 주요사항을 공시합니다.',
-      date: '2024.01.14'
+      company: 'Intel Corp.',
+      type: 'Material Event',
+      title: 'New Business Entry Related Material Event',
+      description: 'Disclosure of material event regarding entry into AI chip new business.',
+      date: 'Jan 14, 2024'
     },
     {
       id: 3,
-      company: 'NAVER',
-      type: '분기보고서',
-      title: '2023년 4분기 실적 발표',
-      description: '2023년 4분기 실적 및 재무상태에 관한 분기보고서를 공시합니다.',
-      date: '2024.01.13'
+      company: 'Google',
+      type: 'Quarterly Report',
+      title: 'Q4 2023 Earnings Release',
+      description: 'Disclosure of quarterly report regarding Q4 2023 performance and financial status.',
+      date: 'Jan 13, 2024'
     },
     {
       id: 4,
-      company: 'LG에너지솔루션',
-      type: '공정공시',
-      title: '주요주주 변동사항',
-      description: '주요주주 지분 변동에 관한 공정공시를 합니다.',
-      date: '2024.01.12'
+      company: 'Tesla Inc.',
+      type: 'Fair Disclosure',
+      title: 'Major Shareholder Changes',
+      description: 'Fair disclosure regarding major shareholder equity changes.',
+      date: 'Jan 12, 2024'
     },
     {
       id: 5,
-      company: '현대차',
-      type: '사업보고서',
-      title: '2023년 사업보고서',
-      description: '2023년도 사업실적 및 재무상태에 관한 사업보고서를 공시합니다.',
-      date: '2024.01.11'
+      company: 'Ford Motor',
+      type: 'Annual Report',
+      title: '2023 Annual Report',
+      description: 'Disclosure of annual report regarding business performance and financial status for 2023.',
+      date: 'Jan 11, 2024'
     }
   ];
 
-  // 리포트 데이터
+  // Report Data
   const reportData = [
     {
       id: 1,
-      source: '미래에셋증권',
-      title: '삼성전자 (005930) - AI 반도체 성장세 지속',
-      summary: 'AI 반도체 시장의 급속한 성장으로 인한 삼성전자의 실적 개선 전망',
-      rating: '매수',
-      targetPrice: '₩85,000',
-      date: '2024.01.15'
+      source: 'Goldman Sachs',
+      title: 'Apple Inc. (AAPL) - AI Chip Growth Continues',
+      summary: 'Forecast for improved Apple performance due to rapid growth in the AI chip market',
+      rating: 'Buy',
+      targetPrice: '$210.00',
+      date: 'Jan 15, 2024'
     },
     {
       id: 2,
-      source: 'NH투자증권',
-      title: 'SK하이닉스 (000660) - 메모리 반도체 회복세',
-      summary: '메모리 반도체 가격 상승과 수요 회복으로 인한 실적 개선 전망',
-      rating: '매수',
-      targetPrice: '₩140,000',
-      date: '2024.01.14'
+      source: 'Morgan Stanley',
+      title: 'Intel Corp. (INTC) - Memory Chip Recovery',
+      summary: 'Forecast for performance improvement due to memory chip price increases and demand recovery',
+      rating: 'Buy',
+      targetPrice: '$55.00',
+      date: 'Jan 14, 2024'
     },
     {
       id: 3,
-      source: '키움증권',
-      title: 'NAVER (035420) - AI 플랫폼 확장',
-      summary: 'AI 기술을 활용한 플랫폼 확장으로 인한 새로운 성장 동력 확보',
-      rating: '보유',
-      targetPrice: '₩200,000',
-      date: '2024.01.13'
+      source: 'JP Morgan',
+      title: 'Google (GOOGL) - AI Platform Expansion',
+      summary: 'Securing new growth engines through platform expansion using AI technology',
+      rating: 'Hold',
+      targetPrice: '$145.00',
+      date: 'Jan 13, 2024'
     },
     {
       id: 4,
-      source: '한국투자증권',
-      title: 'LG에너지솔루션 (373220) - 전기차 배터리 수요 증가',
-      summary: '전기차 시장 확대에 따른 배터리 수요 증가로 실적 개선 전망',
-      rating: '매수',
-      targetPrice: '₩500,000',
-      date: '2024.01.12'
+      source: 'Barclays',
+      title: 'Tesla Inc. (TSLA) - EV Battery Demand Increase',
+      summary: 'Forecast for performance improvement due to increased battery demand as EV market expands',
+      rating: 'Buy',
+      targetPrice: '$275.00',
+      date: 'Jan 12, 2024'
     },
     {
       id: 5,
-      source: '신한투자증권',
-      title: '현대차 (005380) - 수출 확대 및 수익성 개선',
-      summary: '해외 시장 진출 확대와 수익성 개선으로 인한 실적 향상 전망',
-      rating: '매수',
-      targetPrice: '₩200,000',
-      date: '2024.01.11'
+      source: 'Bank of America',
+      title: 'Ford Motor (F) - Export Expansion and Profitability Improvement',
+      summary: 'Forecast for performance improvement due to overseas market expansion and profitability improvement',
+      rating: 'Buy',
+      targetPrice: '$14.50',
+      date: 'Jan 11, 2024'
     }
   ];
 
   const renderNewsContent = () => {
     return (
       <section className="main-news">
-        <h2>투자뉴스</h2>
+        <h2>Investment News</h2>
         <div className="news-list-vertical">
           {newsData.map((news) => (
             <article key={news.id} className="news-item-vertical">
@@ -177,7 +177,7 @@ export default function InfoPage() {
                 <p className="news-excerpt">{news.excerpt}</p>
                 <div className="news-meta">
                   <span className="news-source">{news.source}</span>
-                  <span className="news-views">조회수 {news.views}</span>
+                  <span className="news-views">{news.views} views</span>
                 </div>
               </div>
             </article>
@@ -189,18 +189,18 @@ export default function InfoPage() {
 
   const renderDisclosureContent = () => (
     <section className="disclosure-info">
-      <h2>기업공시</h2>
+      <h2>Company Disclosures</h2>
       <div className="disclosure-filters">
         <select className="disclosure-type">
-          <option>전체</option>
-          <option>사업보고서</option>
-          <option>분기보고서</option>
-          <option>주요사항보고서</option>
-          <option>공정공시</option>
+          <option>All</option>
+          <option>Annual Report</option>
+          <option>Quarterly Report</option>
+          <option>Material Event</option>
+          <option>Fair Disclosure</option>
         </select>
         <input 
           type="text" 
-          placeholder="기업명 검색" 
+          placeholder="Search company name" 
           className="company-search"
         />
       </div>
@@ -218,8 +218,8 @@ export default function InfoPage() {
               <p>{disclosure.description}</p>
             </div>
             <div className="disclosure-actions">
-              <button className="view-btn">보기</button>
-              <button className="download-btn">다운로드</button>
+              <button className="view-btn">View</button>
+              <button className="download-btn">Download</button>
             </div>
           </div>
         ))}
@@ -229,7 +229,7 @@ export default function InfoPage() {
 
   const renderReportContent = () => (
     <section className="investment-reports">
-      <h2>투자리포트</h2>
+      <h2>Investment Reports</h2>
       <div className="reports-grid">
         {reportData.map((report) => (
           <div key={report.id} className="report-card">
@@ -242,11 +242,11 @@ export default function InfoPage() {
               <p>{report.summary}</p>
             </div>
             <div className="report-rating">
-              <span className="rating-label">투자의견:</span>
-              <span className={`rating-value ${report.rating === '매수' ? 'buy' : 'hold'}`}>
+              <span className="rating-label">Rating:</span>
+              <span className={`rating-value ${report.rating === 'Buy' ? 'buy' : 'hold'}`}>
                 {report.rating}
               </span>
-              <span className="target-price">목표가: {report.targetPrice}</span>
+              <span className="target-price">Target: {report.targetPrice}</span>
             </div>
           </div>
         ))}
@@ -269,31 +269,31 @@ export default function InfoPage() {
 
   return (
     <main className="main-content">
-      {/* 1. 카테고리 탭 */}
+      {/* 1. Category Tabs */}
       <section className="info-tabs">
         <div className="tab-container">
           <button 
             className={`info-tab ${activeTab === 'news' ? 'active' : ''}`}
             onClick={() => setActiveTab('news')}
           >
-            투자뉴스
+            Investment News
           </button>
           <button 
             className={`info-tab ${activeTab === 'disclosure' ? 'active' : ''}`}
             onClick={() => setActiveTab('disclosure')}
           >
-            기업공시
+            Company Disclosures
           </button>
           <button 
             className={`info-tab ${activeTab === 'report' ? 'active' : ''}`}
             onClick={() => setActiveTab('report')}
           >
-            리포트
+            Reports
           </button>
-        </div>
+    </div>
       </section>
 
-      {/* 2. 탭별 콘텐츠 */}
+      {/* 2. Tab Content */}
       {renderContent()}
     </main>
   );

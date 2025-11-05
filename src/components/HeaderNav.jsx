@@ -39,11 +39,11 @@ export default function HeaderNav() {
           ))}
         </nav>
         <div className="nav-actions">
-          <button className="search-btn">
-            <span className="search-icon">🔍</span>
-          </button>
+          {/* <button className="search-btn">
+            <span className="search-icon">🔍</span> */}
+          {/* </button> */}
           <button className="profile-btn" onClick={handleProfileClick}>
-            <span className="profile-icon">👤</span>
+            <span className="profile-icon-navbar">👤</span>      {/*TODO: show login button if not logged in*/}
           </button>
         </div>
       </div>

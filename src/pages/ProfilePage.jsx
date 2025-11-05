@@ -4,156 +4,179 @@ import React from 'react';
 export default function ProfilePage() {
   return (
     <main className="main-content">
-      {/* 1. 사용자 정보 */}
+      {/* 1. User Info */}
       <section className="user-info">
         <div className="user-profile">
-          <div className="user-details">
-            <h2>홍길동</h2>
-            <p className="user-email">hong@example.com</p>
-            <div className="user-stats">
-              <span className="stat-item">
-                <strong>회원 등급:</strong> 프리미엄
-              </span>
-              <span className="stat-item">
-                <strong>가입일:</strong> 2024년 1월
-              </span>
-              <span className="stat-item">
-                <strong>총 거래:</strong> 156회
-              </span>
+          <div className="profile-content">
+            <div className="profile-top-row">
+              <div className="profile-image-container">
+                <div className="profile-image">
+                  <span className="profile-icon">👤</span>
+                </div>
+              </div>
+              <div className="user-details">
+                <h2 className="user-name">John Doe</h2>
+                <p className="user-email">john@example.com</p>
+              </div>
+            </div>
+            <div className="profile-bottom-row">
+              <div className="user-stats">
+                <span className="stat-item">
+                  <strong>Total Assets:</strong> $125,000
+                </span>
+                <span className="stat-item">
+                  <strong>Return:</strong> +12.5%
+                </span>
+              </div>
             </div>
           </div>
+          <button className="logout-btn">Logout</button>
         </div>
       </section>
 
-      {/* 2. 포트폴리오 요약 */}
+      {/* 2. Portfolio Summary */}
       <section className="portfolio-summary">
-        <h2 className="section-title">포트폴리오 요약</h2>
+        <h2 className="section-title">Portfolio Summary</h2>
         <div className="portfolio-cards">
           <div className="portfolio-card">
-            <h3>총 자산</h3>
+            <h3>Holdings</h3>
             <div className="card-content">
-              <span className="card-value">₩15,000,000</span>
-              <span className="card-change positive">+12.5%</span>
+              <span className="card-value">8 stocks</span>
+              <span className="card-change positive">+2 new</span>
             </div>
           </div>
           <div className="portfolio-card">
-            <h3>오늘의 수익</h3>
+            <h3>Total Investment</h3>
             <div className="card-content">
-              <span className="card-value">+₩234,500</span>
-              <span className="card-change positive">+1.59%</span>
+              <span className="card-value">$104,000</span>
+              <span className="card-change positive">+$4,200</span>
             </div>
           </div>
           <div className="portfolio-card">
-            <h3>총 수익</h3>
+            <h3>Gain/Loss</h3>
             <div className="card-content">
-              <span className="card-value">+₩2,500,000</span>
+              <span className="card-value">$21,000</span>
               <span className="card-change positive">+20.0%</span>
             </div>
           </div>
-          <div className="portfolio-card">
-            <h3>현금 잔고</h3>
-            <div className="card-content">
-              <span className="card-value">₩3,200,000</span>
-              <span className="card-change neutral">사용가능</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* 3. 최근 거래 내역 */}
+      {/* 3. Holdings List */}
+      <section className="holdings">
+        <h2 className="section-title">My Holdings</h2>
+        <div className="holdings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Shares</th>
+                <th>Avg Price</th>
+                <th>Current Price</th>
+                <th>Gain/Loss</th>
+                <th>Return</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div className="stock-info">
+                    <span className="stock-name">Apple Inc.</span>
+                    <span className="stock-code">AAPL</span>
+                  </div>
+                </td>
+                <td>10 shares</td>
+                <td>$175.00</td>
+                <td>$187.50</td>
+                <td className="positive">+$125.00</td>
+                <td className="positive">+7.14%</td>
+              </tr>
+              <tr>
+                <td>
+                  <div className="stock-info">
+                    <span className="stock-name">Tesla Inc.</span>
+                    <span className="stock-code">TSLA</span>
+                  </div>
+                </td>
+                <td>3 shares</td>
+                <td>$250.00</td>
+                <td>$237.50</td>
+                <td className="negative">-$37.50</td>
+                <td className="negative">-5.0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* 4. Recent Transaction History */}
       <section>
-        <h2 className="section-title">최근 거래 내역</h2>
+        <h2 className="section-title">Recent Transaction History</h2>
         <table>
           <thead>
             <tr>
-              <th>날짜</th>
-              <th>종목</th>
-              <th>구분</th>
-              <th>수량</th>
-              <th>단가</th>
-              <th>금액</th>
+              <th>Date</th>
+              <th>Stock</th>
+              <th>Type</th>
+              <th>Shares</th>
+              <th>Price</th>
+              <th>Amount</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>2024.01.15</td>
+              <td>Jan 15, 2024</td>
               <td>
                 <div className="stock-info">
-                  <span className="stock-name">삼성전자</span>
-                  <span className="stock-code">005930</span>
+                  <span className="stock-name">Apple Inc.</span>
+                  <span className="stock-code">AAPL</span>
                 </div>
               </td>
-              <td><span className="buy">매수</span></td>
-              <td>10주</td>
-              <td>₩71,200</td>
-              <td>₩712,000</td>
+              <td><span className="buy">Buy</span></td>
+              <td>10 shares</td>
+              <td>$187.50</td>
+              <td>$1,875.00</td>
             </tr>
             <tr>
-              <td>2024.01.14</td>
+              <td>Jan 10, 2024</td>
               <td>
                 <div className="stock-info">
-                  <span className="stock-name">SK하이닉스</span>
-                  <span className="stock-code">000660</span>
+                  <span className="stock-name">Meta Platforms</span>
+                  <span className="stock-code">META</span>
                 </div>
               </td>
-              <td><span className="buy">매수</span></td>
-              <td>5주</td>
-              <td>₩128,500</td>
-              <td>₩642,500</td>
-            </tr>
-            <tr>
-              <td>2024.01.10</td>
-              <td>
-                <div className="stock-info">
-                  <span className="stock-name">카카오</span>
-                  <span className="stock-code">035720</span>
-                </div>
-              </td>
-              <td><span className="sell">매도</span></td>
-              <td>15주</td>
-              <td>₩52,300</td>
-              <td>₩784,500</td>
-            </tr>
-            <tr>
-              <td>2024.01.08</td>
-              <td>
-                <div className="stock-info">
-                  <span className="stock-name">NAVER</span>
-                  <span className="stock-code">035420</span>
-                </div>
-              </td>
-              <td><span className="buy">매수</span></td>
-              <td>3주</td>
-              <td>₩200,000</td>
-              <td>₩600,000</td>
+              <td><span className="sell">Sell</span></td>
+              <td>15 shares</td>
+              <td>$385.00</td>
+              <td>$5,775.00</td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      {/* 4. 계정 설정 */}
+      {/* 5. Account Settings */}
       <section>
-        <h2 className="section-title">계정 설정</h2>
+        <h2 className="section-title">Account Settings</h2>
         <div className="summary-grid">
           <div className="summary-card">
-            <h4>알림 설정</h4>
-            <p>이메일 알림 활성화</p>
-            <button>관리</button>
+            <h4>Notification Settings</h4>
+            <p>Email alerts enabled</p>
+            <button>Manage</button>
           </div>
           <div className="summary-card">
-            <h4>보안</h4>
-            <p>2단계 인증 활성화</p>
-            <button>업데이트</button>
+            <h4>Security</h4>
+            <p>Two-factor auth enabled</p>
+            <button>Update</button>
           </div>
           <div className="summary-card">
-            <h4>환경설정</h4>
-            <p>테마: 자동</p>
-            <button>편집</button>
+            <h4>Preferences</h4>
+            <p>Theme: Auto</p>
+            <button>Edit</button>
           </div>
           <div className="summary-card">
-            <h4>언어</h4>
-            <p>한국어</p>
-            <button>변경</button>
+            <h4>Language</h4>
+            <p>English (US)</p>
+            <button>Change</button>
           </div>
         </div>
       </section>
