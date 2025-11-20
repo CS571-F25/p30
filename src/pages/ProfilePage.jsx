@@ -1,7 +1,98 @@
 // src/pages/ProfilePage.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAllDocuments, getDocumentById, queryDocuments } from '../firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ProfilePage() {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [holdings, setHoldings] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!currentUser) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch user profile from Firestore (if you're storing additional data)
+        // Or use currentUser from Firebase Auth
+        const user = await getDocumentById('users', currentUser.uid).catch(() => null);
+        
+        // Combine Firebase Auth user with Firestore data
+        setUserData({
+          name: user?.name || currentUser.displayName || 'User',
+          email: currentUser.email,
+          totalAssets: user?.totalAssets || '0',
+          return: user?.return || '0%'
+        });
+        
+        // Fetch user-specific holdings
+        const userHoldings = await queryDocuments('holdings', [
+          ['userId', '==', currentUser.uid]
+        ]).catch(() => []);
+        setHoldings(userHoldings);
+        
+        // Fetch user-specific transactions
+        const userTransactions = await queryDocuments('transactions', [
+          ['userId', '==', currentUser.uid]
+        ], { 
+          orderBy: { field: 'date', direction: 'desc' }
+        }).catch(() => []);
+        setTransactions(userTransactions);
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching profile data:', err);
+        setError('Failed to load profile data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [currentUser]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="main-content">
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>Loading profile...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="main-content">
+        <div style={{ 
+          padding: '1rem', 
+          margin: '1rem', 
+          backgroundColor: '#fee', 
+          border: '1px solid #fcc',
+          borderRadius: '4px'
+        }}>
+          <p style={{ color: '#c00' }}>{error}</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="main-content">
       {/* 1. User Info */}
@@ -15,22 +106,22 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div className="user-details">
-                <h2 className="user-name">John Doe</h2>
-                <p className="user-email">john@example.com</p>
+                <h2 className="user-name">{userData?.name || 'User'}</h2>
+                <p className="user-email">{userData?.email || 'user@example.com'}</p>
               </div>
             </div>
             <div className="profile-bottom-row">
               <div className="user-stats">
                 <span className="stat-item">
-                  <strong>Total Assets:</strong> $125,000
+                  <strong>Total Assets:</strong> ${userData?.totalAssets || '0'}
                 </span>
                 <span className="stat-item">
-                  <strong>Return:</strong> +12.5%
+                  <strong>Return:</strong> {userData?.return || '0%'}
                 </span>
               </div>
             </div>
           </div>
-          <button className="logout-btn">Logout</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </section>
 
@@ -78,32 +169,37 @@ export default function ProfilePage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  <div className="stock-info">
-                    <span className="stock-name">Apple Inc.</span>
-                    <span className="stock-code">AAPL</span>
-                  </div>
-                </td>
-                <td>10 shares</td>
-                <td>$175.00</td>
-                <td>$187.50</td>
-                <td className="positive">+$125.00</td>
-                <td className="positive">+7.14%</td>
-              </tr>
-              <tr>
-                <td>
-                  <div className="stock-info">
-                    <span className="stock-name">Tesla Inc.</span>
-                    <span className="stock-code">TSLA</span>
-                  </div>
-                </td>
-                <td>3 shares</td>
-                <td>$250.00</td>
-                <td>$237.50</td>
-                <td className="negative">-$37.50</td>
-                <td className="negative">-5.0%</td>
-              </tr>
+              {holdings.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                    No holdings found. Add holdings to your Firebase database.
+                  </td>
+                </tr>
+              ) : (
+                holdings.map((holding) => {
+                  const gainLoss = parseFloat(holding.gainLoss || 0);
+                  const isPositive = gainLoss >= 0;
+                  return (
+                    <tr key={holding.id}>
+                      <td>
+                        <div className="stock-info">
+                          <span className="stock-name">{holding.name || 'N/A'}</span>
+                          <span className="stock-code">{holding.code || 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td>{holding.shares || 0} shares</td>
+                      <td>${holding.avgPrice || '0.00'}</td>
+                      <td>${holding.currentPrice || '0.00'}</td>
+                      <td className={isPositive ? 'positive' : 'negative'}>
+                        {isPositive ? '+' : ''}${Math.abs(gainLoss).toFixed(2)}
+                      </td>
+                      <td className={isPositive ? 'positive' : 'negative'}>
+                        {isPositive ? '+' : ''}{holding.returnPercent || '0.00'}%
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -124,32 +220,33 @@ export default function ProfilePage() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Jan 15, 2024</td>
-              <td>
-                <div className="stock-info">
-                  <span className="stock-name">Apple Inc.</span>
-                  <span className="stock-code">AAPL</span>
-                </div>
-              </td>
-              <td><span className="buy">Buy</span></td>
-              <td>10 shares</td>
-              <td>$187.50</td>
-              <td>$1,875.00</td>
-            </tr>
-            <tr>
-              <td>Jan 10, 2024</td>
-              <td>
-                <div className="stock-info">
-                  <span className="stock-name">Meta Platforms</span>
-                  <span className="stock-code">META</span>
-                </div>
-              </td>
-              <td><span className="sell">Sell</span></td>
-              <td>15 shares</td>
-              <td>$385.00</td>
-              <td>$5,775.00</td>
-            </tr>
+            {transactions.length === 0 ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                  No transactions found.
+                </td>
+              </tr>
+            ) : (
+              transactions.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td>{transaction.date || 'N/A'}</td>
+                  <td>
+                    <div className="stock-info">
+                      <span className="stock-name">{transaction.name || 'N/A'}</span>
+                      <span className="stock-code">{transaction.code || 'N/A'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={transaction.type?.toLowerCase() || 'buy'}>
+                      {transaction.type || 'Buy'}
+                    </span>
+                  </td>
+                  <td>{transaction.shares || 0} shares</td>
+                  <td>${transaction.price || '0.00'}</td>
+                  <td>${transaction.amount || '0.00'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </section>
@@ -169,9 +266,9 @@ export default function ProfilePage() {
             <button>Update</button>
           </div>
           <div className="summary-card">
-            <h4>Preferences</h4>
-            <p>Theme: Auto</p>
-            <button>Edit</button>
+            <h4>Security</h4>
+            <p>Update Password</p>
+            <button>Update</button>
           </div>
           <div className="summary-card">
             <h4>Language</h4>

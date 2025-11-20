@@ -1,42 +1,111 @@
 // src/pages/StockPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllDocuments, queryDocuments } from '../firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
+import StockModal from '../components/StockModal';
 
 export default function StockPage() {
+  const { currentUser } = useAuth();
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [stockData, setStockData] = useState([]);
+  const [watchlist, setWatchlist] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Stock Data
-  const stockData = [
-    {
-      id: 1,
-      name: 'Apple Inc.',
-      code: 'AAPL',
-      price: '$187.50',
-      change: '+$3.20',
-      changePercent: '+1.71%',
-      isPositive: true
-    },
-    {
-      id: 2,
-      name: 'Microsoft Corp.',
-      code: 'MSFT',
-      price: '$395.00',
-      change: '+$10.75',
-      changePercent: '+2.80%',
-      isPositive: true
-    },
-    {
-      id: 3,
-      name: 'Google',
-      code: 'GOOGL',
-      price: '$142.00',
-      change: '-$4.75',
-      changePercent: '-3.26%',
-      isPositive: false
-    }
-  ];
+  const handleStockClick = (stock) => {
+    setSelectedStock(stock);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedStock(null), 300); // Clear after animation
+  };
+
+  // Fetch stocks from Firebase
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        setLoading(true);
+        const stocks = await getAllDocuments('stocks');
+        setStockData(stocks);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching stocks:', err);
+        setError('Failed to load stocks. Please check your Firebase configuration.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStocks();
+  }, []);
+
+  // Fetch user's watchlist from Firebase
+  useEffect(() => {
+    const fetchWatchlist = async () => {
+      if (!currentUser) {
+        setWatchlist([]);
+        return;
+      }
+
+      try {
+        const userWatchlist = await queryDocuments('watchlist', [
+          ['userId', '==', currentUser.uid]
+        ]);
+        setWatchlist(userWatchlist);
+      } catch (err) {
+        console.error('Error fetching watchlist:', err);
+        setWatchlist([]);
+      }
+    };
+
+    fetchWatchlist();
+  }, [currentUser]);
+
+  // Calculate top gainers (stocks with positive change, sorted by percentage)
+  const topGainers = stockData
+    .filter(stock => stock.isPositive)
+    .sort((a, b) => {
+      const aPercent = parseFloat(a.changePercent?.replace(/[+%]/g, '') || 0);
+      const bPercent = parseFloat(b.changePercent?.replace(/[+%]/g, '') || 0);
+      return bPercent - aPercent;
+    })
+    .slice(0, 3);
+
+  // Calculate top losers (stocks with negative change, sorted by percentage)
+  const topLosers = stockData
+    .filter(stock => !stock.isPositive)
+    .sort((a, b) => {
+      const aPercent = parseFloat(a.changePercent?.replace(/[-+%]/g, '') || 0);
+      const bPercent = parseFloat(b.changePercent?.replace(/[-+%]/g, '') || 0);
+      return bPercent - aPercent;
+    })
+    .slice(0, 3);
 
   return (
     <main className="main-content">
+      {/* Loading and Error States */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>Loading stocks...</p>
+        </div>
+      )}
+      
+      {error && (
+        <div style={{ 
+          padding: '1rem', 
+          margin: '1rem', 
+          backgroundColor: '#fee', 
+          border: '1px solid #fcc',
+          borderRadius: '4px'
+        }}>
+          <p style={{ color: '#c00' }}>{error}</p>
+        </div>
+      )}
+
       {/* 1. Search and Filter Section */}
       <section className="stock-search">
         <div className="search-container">
@@ -152,25 +221,38 @@ export default function StockPage() {
             </tr>
           </thead>
           <tbody>
-            {stockData.map((stock) => (
-              <tr key={stock.id}>
-                <td>
-                  <div className="stock-info">
-                    <span className="stock-name">{stock.name}</span>
-                    <span className="stock-code">{stock.code}</span>
-                  </div>
+            {stockData.length === 0 && !loading ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                  No stocks available. Add stocks to your Firebase database.
                 </td>
-                <td><strong>{stock.price}</strong></td>
-                <td className={stock.isPositive ? 'positive' : 'negative'}>
-                  {stock.change}
-                </td>
-                <td className={stock.isPositive ? 'positive' : 'negative'}>
-                  {stock.changePercent}
-                </td>
-                <td>52.3M</td>
-                <td>$2.8T</td>
               </tr>
-            ))}
+            ) : (
+              stockData.map((stock) => (
+                <tr 
+                  key={stock.id} 
+                  onClick={() => handleStockClick(stock)}
+                  style={{ cursor: 'pointer' }}
+                  className="stock-row-clickable"
+                >
+                  <td>
+                    <div className="stock-info">
+                      <span className="stock-name">{stock.name || 'N/A'}</span>
+                      <span className="stock-code">{stock.code || 'N/A'}</span>
+                    </div>
+                  </td>
+                  <td><strong>{stock.price || '$0.00'}</strong></td>
+                  <td className={stock.isPositive ? 'positive' : 'negative'}>
+                    {stock.change || '$0.00'}
+                  </td>
+                  <td className={stock.isPositive ? 'positive' : 'negative'}>
+                    {stock.changePercent || '0.00%'}
+                  </td>
+                  <td>{stock.volume || '0'}</td>
+                  <td>{stock.marketCap || 'N/A'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </section>
@@ -182,72 +264,58 @@ export default function StockPage() {
           <div className="gainers">
             <h3>Top Gainers</h3>
             <div className="movers-list">
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Microsoft Corp.</span>
-                  <span className="stock-code">MSFT</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$395.00</span>
-                  <span className="price-change positive">+2.80%</span>
-                </div>
-              </div>
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Apple Inc.</span>
-                  <span className="stock-code">AAPL</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$187.50</span>
-                  <span className="price-change positive">+1.71%</span>
-                </div>
-              </div>
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Meta Platforms</span>
-                  <span className="stock-code">META</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$385.00</span>
-                  <span className="price-change positive">+1.55%</span>
-                </div>
-              </div>
+              {topGainers.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#666', padding: '1rem' }}>
+                  No gainers available
+                </p>
+              ) : (
+                topGainers.map((stock) => (
+                  <div 
+                    key={stock.id}
+                    className="mover-item"
+                    onClick={() => handleStockClick(stock)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="stock-info">
+                      <span className="stock-name">{stock.name}</span>
+                      <span className="stock-code">{stock.code}</span>
+                    </div>
+                    <div className="stock-price">
+                      <span className="current-price">{stock.price}</span>
+                      <span className="price-change positive">{stock.changePercent}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           <div className="losers">
             <h3>Top Losers</h3>
             <div className="movers-list">
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Google</span>
-                  <span className="stock-code">GOOGL</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$142.00</span>
-                  <span className="price-change negative">-3.26%</span>
-                </div>
-              </div>
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Amazon.com</span>
-                  <span className="stock-code">AMZN</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$178.50</span>
-                  <span className="price-change negative">-1.08%</span>
-                </div>
-              </div>
-              <div className="mover-item">
-                <div className="stock-info">
-                  <span className="stock-name">Netflix Inc.</span>
-                  <span className="stock-code">NFLX</span>
-                </div>
-                <div className="stock-price">
-                  <span className="current-price">$485.00</span>
-                  <span className="price-change negative">-0.52%</span>
-                </div>
-              </div>
+              {topLosers.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#666', padding: '1rem' }}>
+                  No losers available
+                </p>
+              ) : (
+                topLosers.map((stock) => (
+                  <div 
+                    key={stock.id}
+                    className="mover-item"
+                    onClick={() => handleStockClick(stock)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="stock-info">
+                      <span className="stock-name">{stock.name}</span>
+                      <span className="stock-code">{stock.code}</span>
+                    </div>
+                    <div className="stock-price">
+                      <span className="current-price">{stock.price}</span>
+                      <span className="price-change negative">{stock.changePercent}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -266,38 +334,60 @@ export default function StockPage() {
       <section className="watchlist">
         <h2 className="section-title">Watchlist</h2>
         <div className="watchlist-grid">
-          <div className="watchlist-item">
-            <div className="stock-header">
-              <span className="stock-name">NVIDIA Corp.</span>
-              <span className="stock-code">NVDA</span>
+          {!currentUser ? (
+            <div style={{ 
+              gridColumn: '1 / -1', 
+              textAlign: 'center', 
+              padding: '2rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px'
+            }}>
+              <p style={{ marginBottom: '1rem', color: '#666' }}>
+                🔒 Please login to view your watchlist
+              </p>
             </div>
-            <div className="stock-price">
-              <span className="current-price">$495.00</span>
-              <span className="price-change positive">+$5.50 (+1.12%)</span>
+          ) : watchlist.length === 0 ? (
+            <div style={{ 
+              gridColumn: '1 / -1', 
+              textAlign: 'center', 
+              padding: '2rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px'
+            }}>
+              <p style={{ color: '#666' }}>
+                📋 Your watchlist is empty. Click on any stock and add it to your watchlist!
+              </p>
             </div>
-          </div>
-          <div className="watchlist-item">
-            <div className="stock-header">
-              <span className="stock-name">Amazon.com Inc.</span>
-              <span className="stock-code">AMZN</span>
-            </div>
-            <div className="stock-price">
-              <span className="current-price">$178.50</span>
-              <span className="price-change negative">-$1.95 (-1.08%)</span>
-            </div>
-          </div>
-          <div className="watchlist-item">
-            <div className="stock-header">
-              <span className="stock-name">Tesla Inc.</span>
-              <span className="stock-code">TSLA</span>
-            </div>
-            <div className="stock-price">
-              <span className="current-price">$237.50</span>
-              <span className="price-change positive">+$2.65 (+1.12%)</span>
-            </div>
-          </div>
-    </div>
+          ) : (
+            watchlist.map((item) => (
+              <div 
+                key={item.id}
+                className="watchlist-item"
+                onClick={() => handleStockClick(item)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="stock-header">
+                  <span className="stock-name">{item.name}</span>
+                  <span className="stock-code">{item.code}</span>
+                </div>
+                <div className="stock-price">
+                  <span className="current-price">{item.price}</span>
+                  <span className={`price-change ${item.isPositive ? 'positive' : 'negative'}`}>
+                    {item.change} ({item.changePercent})
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </section>
+
+      {/* Stock Detail Modal */}
+      <StockModal 
+        stock={selectedStock}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </main>
   );
 }
