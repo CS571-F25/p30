@@ -60,12 +60,20 @@ export default function HeaderNav() {
         </nav>
         <div className="nav-actions">
           {isAuthenticated ? (
-            <button className="profile-btn" onClick={handleProfileClick} title="Profile">
-              <span className="profile-icon-navbar">👤</span>
+            <button 
+              className="profile-btn" 
+              onClick={handleProfileClick} 
+              aria-label="Go to profile page"
+            >
+              <span className="profile-icon-navbar" aria-hidden="true">👤</span>
             </button>
           ) : (
-            <button className="login-btn-header" onClick={handleLogin}>
-              <span>🔐</span>
+            <button 
+              className="login-btn-header" 
+              onClick={handleLogin}
+              aria-label="Login to your account"
+            >
+              <span aria-hidden="true">🔐</span>
               <span>Login</span>
             </button>
           )}

@@ -1,17 +1,37 @@
 // src/pages/ProfilePage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllDocuments, getDocumentById, queryDocuments } from '../firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import StockModal from '../components/StockModal';
 
 export default function ProfilePage() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [holdings, setHoldings] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSellMode, setIsSellMode] = useState(false);
+
+  const fetchHoldings = useCallback(async () => {
+    if (!currentUser) {
+      setHoldings([]);
+      return;
+    }
+    
+    try {
+      const userHoldings = await queryDocuments('holdings', [
+        ['userId', '==', currentUser.uid]
+      ]).catch(() => []);
+      setHoldings(userHoldings);
+    } catch (err) {
+      console.error('Error fetching holdings:', err);
+      setHoldings([]);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -33,18 +53,7 @@ export default function ProfilePage() {
         });
         
         // Fetch user-specific holdings
-        const userHoldings = await queryDocuments('holdings', [
-          ['userId', '==', currentUser.uid]
-        ]).catch(() => []);
-        setHoldings(userHoldings);
-        
-        // Fetch user-specific transactions
-        const userTransactions = await queryDocuments('transactions', [
-          ['userId', '==', currentUser.uid]
-        ], { 
-          orderBy: { field: 'date', direction: 'desc' }
-        }).catch(() => []);
-        setTransactions(userTransactions);
+        await fetchHoldings();
         
         setError(null);
       } catch (err) {
@@ -56,7 +65,7 @@ export default function ProfilePage() {
     };
 
     fetchUserData();
-  }, [currentUser]);
+  }, [currentUser, fetchHoldings]);
 
   const handleLogout = async () => {
     try {
@@ -65,6 +74,18 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error logging out:', error);
     }
+  };
+
+  const handleStockClick = (stock, sellMode = false) => {
+    setSelectedStock(stock);
+    setIsSellMode(sellMode);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsSellMode(false);
+    setTimeout(() => setSelectedStock(null), 300);
   };
 
   if (loading) {
@@ -177,24 +198,49 @@ export default function ProfilePage() {
                 </tr>
               ) : (
                 holdings.map((holding) => {
-                  const gainLoss = parseFloat(holding.gainLoss || 0);
+                  const avgPrice = parseFloat(holding.avgBuyPrice?.replace('$', '') || 0);
+                  const currentPrice = parseFloat(holding.currentPrice?.replace('$', '') || 0);
+                  const shares = holding.shares || 0;
+                  const totalValue = currentPrice * shares;
+                  const totalCost = avgPrice * shares;
+                  const gainLoss = totalValue - totalCost;
+                  const returnPercent = totalCost > 0 ? ((gainLoss / totalCost) * 100) : 0;
                   const isPositive = gainLoss >= 0;
+                  
+                  // Create a complete stock object with all necessary fields
+                  const stockData = {
+                    ...holding,
+                    price: holding.currentPrice,
+                    change: holding.change || '$0.00',
+                    changePercent: holding.changePercent || '0.00%',
+                    isPositive: isPositive,
+                    volume: holding.volume || 'N/A',
+                    marketCap: holding.marketCap || 'N/A',
+                    dayHigh: holding.dayHigh,
+                    dayLow: holding.dayLow
+                  };
+                  
                   return (
-                    <tr key={holding.id}>
+                    <tr 
+                      key={holding.id}
+                      onClick={() => handleStockClick(stockData, true)}
+                      style={{ cursor: 'pointer' }}
+                      className="stock-row-clickable"
+                    >
                       <td>
                         <div className="stock-info">
                           <span className="stock-name">{holding.name || 'N/A'}</span>
                           <span className="stock-code">{holding.code || 'N/A'}</span>
                         </div>
                       </td>
-                      <td>{holding.shares || 0} shares</td>
-                      <td>${holding.avgPrice || '0.00'}</td>
-                      <td>${holding.currentPrice || '0.00'}</td>
+                      <td>{shares} shares</td>
+                      <td>{holding.avgBuyPrice || '$0.00'}</td>
+                      <td>{holding.currentPrice || '$0.00'}</td>
                       <td className={isPositive ? 'positive' : 'negative'}>
                         {isPositive ? '+' : ''}${Math.abs(gainLoss).toFixed(2)}
                       </td>
                       <td className={isPositive ? 'positive' : 'negative'}>
-                        {isPositive ? '+' : ''}{holding.returnPercent || '0.00'}%
+                        {isPositive ? '+' : ''}{returnPercent.toFixed(2)}%
                       </td>
                     </tr>
                   );
@@ -205,53 +251,7 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* 4. Recent Transaction History */}
-      <section>
-        <h2 className="section-title">Recent Transaction History</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Stock</th>
-              <th>Type</th>
-              <th>Shares</th>
-              <th>Price</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.length === 0 ? (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
-                  No transactions found.
-                </td>
-              </tr>
-            ) : (
-              transactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td>{transaction.date || 'N/A'}</td>
-                  <td>
-                    <div className="stock-info">
-                      <span className="stock-name">{transaction.name || 'N/A'}</span>
-                      <span className="stock-code">{transaction.code || 'N/A'}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={transaction.type?.toLowerCase() || 'buy'}>
-                      {transaction.type || 'Buy'}
-                    </span>
-                  </td>
-                  <td>{transaction.shares || 0} shares</td>
-                  <td>${transaction.price || '0.00'}</td>
-                  <td>${transaction.amount || '0.00'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </section>
-
-      {/* 5. Account Settings */}
+      {/* 4. Account Settings */}
       <section>
         <h2 className="section-title">Account Settings</h2>
         <div className="summary-grid">
@@ -277,6 +277,15 @@ export default function ProfilePage() {
           </div>
         </div>
       </section>
+
+      {/* Stock Detail Modal */}
+      <StockModal 
+        stock={selectedStock}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onHoldingsUpdate={fetchHoldings}
+        isSellMode={isSellMode}
+      />
     </main>
   );
 }
